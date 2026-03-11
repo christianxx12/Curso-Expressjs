@@ -1,0 +1,17 @@
+{
+  "name": "curso-expressjs",
+  "version": "1.0.0",
+  "description": "curso express.js de Platzi",
+  "keywords": [],
+  "license": "MIT",
+  "author": "Christian Guado <crguado@gmail.com>",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {}
+}
