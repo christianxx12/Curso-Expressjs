@@ -72,6 +72,32 @@ app.get("/users", (req, res) => {
   });
 });
 
+app.post("/users", (req, res) => {
+  const newUser = req.body;
+  if (!newUser.name || newUser.name.length < 3) {
+    return res
+      .status(400)
+      .json({ error: "El nombre debe tener al menos 3 caracteres" });
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!newUser.email || !emailRegex.test(newUser.email)) {
+    return res.status(400).json({ error: "Email no válido" });
+  }
+  fs.readFile(usersFilePath, "utf-8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Error con conexión de datos." });
+    }
+    const users = JSON.parse(data);
+    users.push(newUser);
+    fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error al guardar el usuario." });
+      }
+      res.status(201).json(newUser);
+    });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor: http://localhost:${PORT}`);
 });
