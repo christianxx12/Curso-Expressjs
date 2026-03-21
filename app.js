@@ -2,6 +2,9 @@
 // si no usar el siguiente comando: node --env-file .env --watch app.js
 require("dotenv").config();
 const express = require("express");
+
+const { validateUser, isUniqueId } = require("./utils/validation");
+
 const bodyParser = require("body-parser");
 
 const fs = require("fs");
@@ -74,20 +77,21 @@ app.get("/users", (req, res) => {
 
 app.post("/users", (req, res) => {
   const newUser = req.body;
-  if (!newUser.name || newUser.name.length < 3) {
-    return res
-      .status(400)
-      .json({ error: "El nombre debe tener al menos 3 caracteres" });
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!newUser.email || !emailRegex.test(newUser.email)) {
-    return res.status(400).json({ error: "Email no válido" });
-  }
   fs.readFile(usersFilePath, "utf-8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error con conexión de datos." });
     }
     const users = JSON.parse(data);
+
+    const validationId = isUniqueId(newUser.id, users);
+    const validationUser = validateUser(newUser);
+    if (!validationUser.isValid) {
+      return res.status(400).json({ error: validationUser.error });
+    }
+    if (!validationId) {
+      return res.status(400).json({ error: "El ID ya existe." });
+    }
+
     users.push(newUser);
     fs.writeFile(usersFilePath, JSON.stringify(users, null, 2), (err) => {
       if (err) {
@@ -102,18 +106,17 @@ app.put("/users/:id", (req, res) => {
   const userId = parseInt(req.params.id, 10);
   const updatedUser = req.body;
 
-  if (isNaN(userId)) {
-    return res.status(400).json({ error: "ID de usuario no válido" });
-  } else if (!updatedUser || Object.keys(updatedUser).length === 0) {
-    return res
-      .status(400)
-      .json({ error: "No se proporcionaron datos para actualizar" });
-  }
   fs.readFile(usersFilePath, "utf-8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error con conexión de datos." });
     }
     let users = JSON.parse(data);
+
+    const validation = validateUser(updatedUser);
+    if (!validation.isValid) {
+      return res.status(400).json({ error: validation.error });
+    }
+
     users = users.map((user) =>
       user.id === userId ? { ...user, ...updatedUser } : user,
     );
