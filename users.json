@@ -1,27 +1,12 @@
 [
   {
-    "id": 2,
-    "name": "Jhon Smith",
-    "email": "jhon@example2.com"
-  },
-  {
-    "id": 2,
-    "name": "Jane Smith",
-    "email": "jane@example.com"
-  },
-  {
-    "id": 2,
-    "name": "Jhon Smith",
-    "email": "jhon@example2.com"
-  },
-  {
     "id": 1,
     "name": "Jhon Doe",
     "email": "jhon@example.con"
   },
   {
-    "id": 3,
-    "name": "Christian Guado",
+    "id": 2,
+    "name": "Christian RafaelGuado ",
     "email": "crguado@gmail.com"
   }
 ]
